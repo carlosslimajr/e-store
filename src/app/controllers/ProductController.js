@@ -47,5 +47,29 @@ module.exports = {
 
     return res.render("products/edit.njk", {product,categories}) // aqui só estou enviando um id
     //Salvando as categorias
+  },
+  async put (req,res){
+    const keys = Object.keys(req.body)//Pesquisar o que estou fazendo aqui !
+    for (key of keys) {
+      //Verificando se algo no objeto esta vazio!
+      if (req.body[key] == "") {
+        return res.send("Please, fill all fields !")
+      }
+    }
+    req.body.price = req.body.price.replace(/\D/g, "") // limpando o body price
+
+    if(req.body.old_price != req.body.price){
+      const oldProduct = await Product.find(req.body.id) // proucurando no banco de dados o antigo
+
+      req.body.old_price = oldProduct.rows[0].price
+    }
+    await Product.update(req.body)
+
+    return res.redirect(`/products/${req.body.id}/edit`)
+  },
+  async delete(req,res){
+    await Product.delete(req.body.id)
+
+    return res.redirect('products/create')
   }
 }
