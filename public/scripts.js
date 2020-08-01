@@ -37,8 +37,6 @@ const Mask = {
   }
 }
 
-
-
 //SESSÃO FOTOS !!!
 
 const PhotosUpload = {
@@ -133,5 +131,33 @@ const PhotosUpload = {
     PhotosUpload.input.files = PhotosUpload.getAllFiles() //atualizando e removendo !
 
     photoDiv.remove() //Ok aqui complicou ,buguei tudo ! REVISASR
+  },
+  removeOldPhoto(event){
+    const photoDiv = event.target.parentNode //tirando do front-end
+    if(photoDiv.id){ //certificando se tem id
+      const removedFiles = document.querySelector('input[name="removed_files"')
+      if(removedFiles){
+        removedFiles.value +=`${photoDiv.id},` //concatenando os ids se deletar mais de um
+      }
+
+    }
+
+
+    photoDiv.remove()
+  }
+}
+
+//GALERIA DE FOTOS
+
+const ImageGallery = {
+  highlight:document.querySelector('.gallery .highlight >img'), //pegando highlight
+  previews: document.querySelectorAll('.gallery-preview img'), //pegando toda a lista das imagens
+  setImage(e){
+    const {target} = e
+
+    ImageGallery.previews.forEach(preview=>preview.classList.remove('active'))//removendo active de todos
+    target.classList.add('active')
+
+    ImageGallery.highlight.src = target.src //trocando highlight
   }
 }

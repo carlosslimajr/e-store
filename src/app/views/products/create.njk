@@ -1,7 +1,7 @@
 {% extends "layout.njk" %}
 {% block content %}
   <section class="container form">
-    <form method="POST" action="/products">
+    <form method="POST" action="/products" enctype="multipart/form-data"> <!-- Agora permite enviar arquivos-->
       <div class="header">
         <h3>Cadastrar Produto {{productID}}</h3>
       </div>

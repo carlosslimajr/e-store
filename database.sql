@@ -18,12 +18,31 @@ CREATE TABLE "categories" (
 );
 
 CREATE TABLE "files" (
-  "id" int PRIMARY KEY,
+  "id" SERIAL PRIMARY KEY,
   "name" text,
   "path" text NOT NULL,
-  "product_id" int 
+  "product_id" int
 );
 
 ALTER TABLE "products" ADD FOREIGN KEY ("category_id") REFERENCES "categories" ("id");
 
 ALTER TABLE "files" ADD FOREIGN KEY ("product_id") REFERENCES "products" ("id");
+
+
+function no sql:
+criando function e atualizando ela na hora do update
+
+CREATE FUNCTION trigger_set_timestamp()
+RETURNS TRIGGER AS $$
+BEGIN
+	NEW.updated_at = NOW();
+  RETURN NEW;
+
+END;
+
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER set_timestamp
+BEFORE UPDATE ON products
+FOR EACH ROW
+EXECUTE PROCEDURE trigger_set_time_stamp();

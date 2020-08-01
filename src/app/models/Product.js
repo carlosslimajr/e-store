@@ -1,6 +1,12 @@
 const db = require('../../config/db') //pegando bd
 
 module.exports = {
+  all(){
+    return db.query(`
+    SELECT * from products
+    ORDER BY updated_at DESC
+    `)
+  },
   create(data) {
     //fazendo a primeira query sql !
     const query = `INSERT INTO products (
@@ -65,6 +71,11 @@ module.exports = {
   },
   delete(id){
     return db.query('DELETE FROM products WHERE id =$1', [id])
+  },
+  files(id){
+    //buscando fotos no banco de dados !
+    return db.query(`SELECT * FROM files WHERE product_id = $1`,[id])
   }
+  
 
 }
