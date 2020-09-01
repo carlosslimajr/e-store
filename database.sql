@@ -17,6 +17,10 @@ CREATE TABLE "categories" (
   "name" text NOT NULL
 );
 
+INSERT INTO categories(name) VALUES('comida');
+INSERT INTO categories(name) VALUES('eletrônicos');
+INSERT INTO categories(name) VALUES('automóveis');
+
 CREATE TABLE "files" (
   "id" SERIAL PRIMARY KEY,
   "name" text,
@@ -25,12 +29,24 @@ CREATE TABLE "files" (
 );
 
 ALTER TABLE "products" ADD FOREIGN KEY ("category_id") REFERENCES "categories" ("id");
-
 ALTER TABLE "files" ADD FOREIGN KEY ("product_id") REFERENCES "products" ("id");
 
+CREATE TABLE "users" (
+  "id" SERIAL PRIMARY KEY,
+  "name" text NOT NULL,
+  "email" text UNIQUE NOT NULL,
+  "password" text NOT NULL,
+  "cpf_cnpj" int UNIQUE NOT NULL,
+  "cep" text,
+  "adress" text,
+  "created_at" timestamp DEFAULT (now()),
+  "updated_at" timestamp DEFAULT (now())
+);
 
-function no sql:
-criando function e atualizando ela na hora do update
+--foreing key
+ALTER TABLE "products" ADD FOREIGN KEY ("user_id") REFERENCES "users" ("id");
+
+-- create procedure
 
 CREATE FUNCTION trigger_set_timestamp()
 RETURNS TRIGGER AS $$
@@ -39,10 +55,29 @@ BEGIN
   RETURN NEW;
 
 END;
-
 $$ LANGUAGE plpgsql;
 
+--AUTO UPDATED_AT products
 CREATE TRIGGER set_timestamp
 BEFORE UPDATE ON products
 FOR EACH ROW
 EXECUTE PROCEDURE trigger_set_time_stamp();
+
+--AUTO UPDATED_AT users
+CREATE TRIGGER set_timestamp
+BEFORE UPDATE ON users
+FOR EACH ROW
+EXECUTE PROCEDURE trigger_set_time_stamp();
+
+--tabela pg connect simple
+ 
+CREATE TABLE "session" (
+  "sid" varchar NOT NULL COLLATE "default",
+	"sess" json NOT NULL,
+	"expire" timestamp(6) NOT NULL
+)
+WITH (OIDS=FALSE);
+
+ALTER TABLE "session" ADD CONSTRAINT "session_pkey" PRIMARY KEY ("sid") NOT DEFERRABLE INITIALLY IMMEDIATE;
+
+CREATE INDEX "IDX_session_expire" ON "session" ("expire");

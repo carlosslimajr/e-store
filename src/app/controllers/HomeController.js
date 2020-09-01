@@ -5,7 +5,9 @@ const File = require('../models/File')
 
 
 module.exports = {
+
   async index(req,res){
+    try{
     let results = await Product.all()
     const products = results.rows //coloco todos os produtos aqui
 
@@ -21,12 +23,14 @@ module.exports = {
       product.oldprice = formatPrice(product.old_price)
       product.price = formatPrice(product.price)
       return product
-    }).filter((product,index)=>index>2 ? false : true) // depois ver q porra ta rolando aqui
+    }).filter((product,index)=>index>6 ? false : true) // depois ver q porra ta rolando aqui
 
     const lastAdded = await Promise.all(productsPromises)
-    console.log(lastAdded)
+    //console.log(lastAdded)
 
     return res.render("home/index", {products: lastAdded})
-  },
+  } catch(err){
+    console.log(err)
+  }
 
-}
+}}

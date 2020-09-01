@@ -75,6 +75,33 @@ module.exports = {
   files(id){
     //buscando fotos no banco de dados !
     return db.query(`SELECT * FROM files WHERE product_id = $1`,[id])
+  },
+  search(params){
+    const {filter,category} = params //extraindo parametros
+
+    let query = ""
+    filterQuery = `WHERE`
+
+    if(category){ //filtrando com categorias!
+      filterQuery = `${filterQuery}
+      products.category_id = ${category}
+      AND
+      `
+    }
+    filterQuery = `
+      ${filterQuery}
+      products.name ilike '%${filter}%'
+      OR products.description ilike '%${filter}%'
+    `
+
+    query = `
+    SELECT products.*,
+    categories.name AS category_name
+    FROM products
+    LEFT JOIN categories ON (categories.id = products.category_id)
+    ${filterQuery}
+    `
+    return db.query(query)
   }
   
 

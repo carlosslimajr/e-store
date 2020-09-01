@@ -3,9 +3,19 @@ const nunjucks = require('nunjucks')
 const routes = require('./routes') // Todas as rotas estou puxando de outro arquivo para n ficar mto extenso!
 const server = express() //estou iniciando o express que agora é uma função
 const path = require('path')
+const session = require('./config/session') //sessão de usuario,middlware
 const methodOverride = require('method-override')
 
 //Middlewares !
+server.use(session) //usando session dentro do server para contas
+
+server.use((req,res,next)=>{
+  //criando um middleware
+  res.locals.session = req.session //tornando a session disponivel em todo o layout
+  next()
+})
+
+
 server.use(express.urlencoded({extended: true}))//n sei oq é isso
 server.use(express.static('public'))//Usando a pasta public para puxar os estilos/js
 server.use(methodOverride('_method'))//puxando o methodoverride
