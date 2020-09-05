@@ -1,59 +1,55 @@
-const db = require("../../config/db")
+const db = require('../../config/db') //pegando bd
 const { hash } = require('bcryptjs')
 
 module.exports = {
   async findOne(filters) {
-    let query = `SELECT * FROM users`
-
+    let query = "SELECT * FROM users"
+    // console.log(filters)
     Object.keys(filters).map(key => {
-      //where | and 
+      //WHERE | OR | AND
+      //Construindo dinamicamente !
       query = `${query}
-            ${key}
-            `
+      ${key}
+      `
       Object.keys(filters[key]).map(field => {
-        //cpf = cpf
         query = `${query} ${field} = '${filters[key][field]}'`
       })
     })
 
     const results = await db.query(query)
 
-    return results.rows[0]
+    return results.rows[0] // no 0 pq estou proucurando 1 só
   },
-
   async create(data) {
-
     try {
-      const query = `
-            INSERT INTO users (
-                name,
-                email,
-                password,
-                cpf_cnpj,
-                cep,
-                adress
-            ) VALUES ($1, $2, $3, $4, $5, $6)
-                RETURNING id
-            `
+      //fazendo a primeira query sql !
+      const query = `INSERT INTO users (
+      name,
+      email,
+      password,
+      cpf_cnpj,
+      cep,
+      adress
+    )VALUES ($1,$2,$3,$4,$5,$6)
+    RETURNING id`
 
-      //hash of password
+      //hash of password -> senha n pode ir aberta !
+      //Criptografando senha !
       const passwordHash = await hash(data.password, 8)
-
       const values = [
         data.name,
         data.email,
         passwordHash,
         data.cpf_cnpj.replace(/\D/g, ""),
         data.cep.replace(/\D/g, ""),
-        data.adress
+        data.adress,
       ]
 
       const results = await db.query(query, values)
-
       return results.rows[0].id
 
-    } catch (err) {
-      console.error(err)
+    } catch (error) {
+      console.error(error)
     }
 
   },
@@ -77,4 +73,5 @@ module.exports = {
     await db.query(query)
     return
   }
+
 }

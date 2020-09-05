@@ -1,5 +1,4 @@
 const User = require('../models/User')
-const {create} = require('../models/User')
 const {formatCep,formatCpfCnpj} = require('../../lib/utils')
 console.log('chegou até aqui')
 console.log(User)
@@ -20,8 +19,7 @@ module.exports = {
   },
   async post(req,res){
     try{
-      const userId = create(req.body)
-  
+      const userId = await User.create(req.body)
       req.session.userId = userId
       return res.redirect('/users')
     } catch(err){
@@ -33,13 +31,13 @@ module.exports = {
   },
   async update(req,res){
     try{
-      const{user} = req
-      let{name,email,cpf_cnpj,adress,cep} = req.body
+
+      let{name,email,cpf_cnpj,adress,cep,id} = req.body
 
       cpf_cnpj = cpf_cnpj.replace(/\D/g,"")
       cep = cep.replace(/\D/g,"")
 
-      await User.update(user.id,{
+      await User.update(id,{
         name,
         email,
         cpf_cnpj,
@@ -55,7 +53,8 @@ module.exports = {
     }catch(err){
       console.error(err)
       return res.render("user/index",{
-        error:"Algum erro aconteceu!"
+        error:"Algum erro aconteceu!",
+        user:req.body
       })
     }
   }
